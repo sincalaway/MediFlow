@@ -1,0 +1,48 @@
+{
+  "name": "mediflow",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MediFlow 诊所管理系统（Web + 离线桌面版）",
+  "license": "MIT",
+  "packageManager": "pnpm@10.34.9",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "concurrently -k -n server,web -c blue,green \"pnpm --filter @mediflow/server dev\" \"pnpm --filter @mediflow/web dev\"",
+    "build": "pnpm --filter @mediflow/web build && pnpm --filter @mediflow/server build",
+    "build:desktop": "pnpm build && pnpm --filter @mediflow/desktop dist",
+    "start": "pnpm --filter @mediflow/server start",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "db:seed": "pnpm --filter @mediflow/server seed",
+    "db:sql": "pnpm --filter @mediflow/server db:sql",
+    "import:clinicms": "pnpm --filter @mediflow/server import:clinicms"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.0",
+    "concurrently": "^9.1.0",
+    "eslint": "^9.39.0",
+    "eslint-config-prettier": "^10.1.0",
+    "eslint-plugin-vue": "^9.33.0",
+    "globals": "^16.0.0",
+    "prettier": "^3.6.0",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.46.0",
+    "vue-eslint-parser": "^9.4.3"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@prisma/client",
+      "@prisma/engines",
+      "prisma",
+      "esbuild",
+      "electron",
+      "vue-demi"
+    ]
+  },
+  "type": "module"
+}
