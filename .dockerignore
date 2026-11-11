@@ -1,0 +1,8 @@
+**/node_modules
+**/dist
+**/.stage
+**/release
+**/data
+.git
+*.db
+*.Dbi

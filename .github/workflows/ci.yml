@@ -1,0 +1,110 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Lint · Typecheck · Test · Build
+    runs-on: ubuntu-latest
+    env:
+      ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Lint
+        run: pnpm lint
+      - name: Format check
+        run: pnpm format:check
+      - name: Schema SQL up to date
+        run: |
+          pnpm db:sql
+          git diff --exit-code -- apps/server/src/db/schemaSql.ts
+      - name: Typecheck
+        run: pnpm typecheck
+      - name: Test
+        run: pnpm test
+      - name: Build (web + server)
+        run: pnpm build
+      - name: Server smoke test
+        run: |
+          cd apps/server
+          DATABASE_URL=file:/tmp/ci/mediflow.db LOG=0 PORT=3123 node dist/index.cjs &
+          for i in $(seq 1 30); do curl -sf http://127.0.0.1:3123/api/health && break; sleep 1; done
+          curl -sf http://127.0.0.1:3123/api/health
+          curl -sf http://127.0.0.1:3123/ | grep -q 'id="app"'
+
+  postgres:
+    name: PostgreSQL integration
+    runs-on: ubuntu-latest
+    env:
+      ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: mediflow
+          POSTGRES_PASSWORD: mediflow
+          POSTGRES_DB: mediflow
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U mediflow" --health-interval 5s --health-timeout 5s --health-retries 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @mediflow/server prisma:pg
+      - name: Seed + import old data on PostgreSQL
+        working-directory: apps/server
+        env:
+          PG: postgresql://mediflow:mediflow@localhost:5432/mediflow
+        run: |
+          DATABASE_URL="$PG?schema=demo" pnpm seed
+          DATABASE_URL="$PG?schema=legacy" pnpm import:clinicms -- --json test/fixtures/clinicms-sample.json
+
+  desktop:
+    name: Desktop package (Linux, unpacked)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - name: Smoke test inside Electron's Node runtime
+        run: pnpm --filter @mediflow/desktop smoke
+      - name: electron-builder --dir
+        run: pnpm --filter @mediflow/desktop run dist:dir --linux
+      - run: ls -la apps/desktop/release/linux-unpacked/resources/app apps/desktop/release/linux-unpacked/resources/app/node_modules/.prisma/client
+
+  docker:
+    name: Docker image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          tags: mediflow:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
