@@ -1,3 +1,4 @@
+<!-- MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow -->
 <script setup lang="ts">
 /* 通用主数据维护页：列表 + 搜索 + 弹窗表单（金额字段以元录入，以分提交） */
 import type { ModuleKey } from '@mediflow/shared'

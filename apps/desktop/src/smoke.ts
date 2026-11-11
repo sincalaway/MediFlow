@@ -1,3 +1,4 @@
+// MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow
 /* 桌面版冒烟测试：用 Electron 自带的 Node 运行（ELECTRON_RUN_AS_NODE=1），验证内置服务 + Prisma 引擎可用 */
 import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'

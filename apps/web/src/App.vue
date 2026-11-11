@@ -1,3 +1,4 @@
+<!-- MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow -->
 <script setup lang="ts">
 import { dateZhCN, zhCN, type GlobalThemeOverrides } from 'naive-ui'
 

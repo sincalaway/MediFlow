@@ -1,3 +1,4 @@
+// MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow
 import { pinyin } from 'pinyin-pro'
 
 /** 生成拼音检索码：汉字取拼音首字母，字母数字保留，其他字符忽略。例：999感冒颗粒 -> 999GMKL */

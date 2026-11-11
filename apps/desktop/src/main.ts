@@ -1,3 +1,4 @@
+// MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow
 import { app, BrowserWindow, dialog, Menu, shell } from 'electron'
 import { join } from 'node:path'
 import { startServer } from './serverHost'
@@ -83,7 +84,7 @@ function buildMenu() {
             dialog.showMessageBox({
               title: '关于 MediFlow',
               message: `MediFlow 诊所管理系统 v${app.getVersion()}`,
-              detail: `离线单机版，数据保存在：\n${server?.dataDir}\n\n请定期在「系统管理 → 备份与恢复」中备份数据。`,
+              detail: `离线单机版，数据保存在：\n${server?.dataDir}\n\n请定期在「系统管理 → 备份与恢复」中备份数据。\n\n© 2026 sincalwow · MIT License`,
             }),
         },
       ],

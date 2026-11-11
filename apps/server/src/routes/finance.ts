@@ -1,3 +1,4 @@
+// MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow
 import { periodQuerySchema, supplierPaymentSchema, toDateStr } from '@mediflow/shared'
 import type { FastifyPluginAsync } from 'fastify'
 import { currentUser, guard } from '../auth'

@@ -1,3 +1,4 @@
+// MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow
 // 生成桌面版打包目录 .stage：
 //   main.js            Electron 主进程 + 内置服务端（esbuild 打包）
 //   web/               前端构建产物（apps/web/dist）

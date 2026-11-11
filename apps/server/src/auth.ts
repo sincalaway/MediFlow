@@ -1,3 +1,4 @@
+// MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow
 import { can, type ModuleKey, type Role } from '@mediflow/shared'
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify'
 import { forbidden } from './errors'

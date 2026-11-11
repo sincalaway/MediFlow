@@ -1,3 +1,4 @@
+// MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow
 import { userCreateSchema, userUpdateSchema } from '@mediflow/shared'
 import bcrypt from 'bcryptjs'
 import type { FastifyPluginAsync } from 'fastify'

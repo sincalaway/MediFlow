@@ -1,3 +1,4 @@
+// MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow
 /** 金额统一以「分」为单位的整数存储与计算 */
 export function yuanToCents(yuan: number | string): number {
   const n = typeof yuan === 'string' ? Number(yuan) : yuan

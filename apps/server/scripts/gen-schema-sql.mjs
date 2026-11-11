@@ -1,3 +1,4 @@
+// MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow
 // 生成建表 SQL（SQLite + PostgreSQL），写入 src/db/schemaSql.ts，供启动时自动建库（桌面版无需 Prisma CLI）
 import { execFileSync } from 'node:child_process'
 import { readFileSync, writeFileSync } from 'node:fs'
@@ -22,7 +23,8 @@ const pg = diff('prisma/schema.postgresql.prisma')
 const version = (readFileSync(join(root, 'prisma/schema.prisma'), 'utf8').match(
   /SCHEMA_VERSION\s*=\s*(\d+)/,
 ) || [0, 1])[1]
-const out = `// 自动生成，请勿手改：pnpm db:sql
+const out = `// MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow
+// 自动生成，请勿手改：pnpm db:sql
 export const SCHEMA_VERSION = ${version}
 export const SQLITE_SQL = ${JSON.stringify(sqlite)}
 export const POSTGRES_SQL = ${JSON.stringify(pg)}

@@ -1,3 +1,4 @@
+// MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow
 import { buildApp } from '@mediflow/server/src/app'
 import { loadSecret } from '@mediflow/server/src/config'
 import { mkdirSync } from 'node:fs'

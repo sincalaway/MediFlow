@@ -1,3 +1,4 @@
+// MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow
 import vue from '@vitejs/plugin-vue'
 import { defineConfig } from 'vite'
 

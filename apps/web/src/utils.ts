@@ -1,3 +1,4 @@
+// MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow
 import { formatMoney, toDateStr } from '@mediflow/shared'
 import dayjs from 'dayjs'
 import { createDiscreteApi } from 'naive-ui'

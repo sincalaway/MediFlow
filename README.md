@@ -168,6 +168,10 @@ tools/import-clinicms/        旧数据导出脚本
 - 报表暂不支持导出 Excel（主数据支持）；
 - 桌面版暂无自动更新。
 
+## 作者
+
+**sincalwow** — MediFlow 由 sincalwow 设计与维护。
+
 ## 许可证
 
-[MIT](./LICENSE)。原系统 inmis/Clinicms 的版权归其作者所有，本项目未包含其任何程序文件或数据库文件（测试用的演示数据 JSON 由其公开演示库导出）。
+[MIT](./LICENSE) © 2026 sincalwow。原系统 inmis/Clinicms 的版权归其作者所有，本项目未包含其任何程序文件或数据库文件（测试用的演示数据 JSON 由其公开演示库导出）。

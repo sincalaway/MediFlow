@@ -1,3 +1,4 @@
+// MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow
 // 由 schema.prisma (sqlite) 生成指定 provider 的 schema 副本
 import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'

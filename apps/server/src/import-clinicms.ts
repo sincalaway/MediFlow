@@ -1,3 +1,4 @@
+// MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow
 /**
  * 导入 inmis/Clinicms 旧数据（Clinicms.Dbi）到 MediFlow 数据库。
  *

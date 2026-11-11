@@ -1,3 +1,4 @@
+// MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow
 import type { FastifyInstance } from 'fastify'
 
 const WRITE = new Set(['POST', 'PUT', 'PATCH', 'DELETE'])

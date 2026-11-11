@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow
 """从 inmis/Clinicms 的 Clinicms.Dbi（Access/Jet 数据库）导出 13 张业务表为 JSON。
 
 用法: python3 extract.py path/to/Clinicms.Dbi out.json

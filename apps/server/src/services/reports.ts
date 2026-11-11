@@ -1,3 +1,4 @@
+// MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow
 import { addDays, computeSupplierPayable, expiryState, toDateStr, type ExpiryState } from '@mediflow/shared'
 import type { PrismaClient } from '@prisma/client'
 import { totalsOf } from './visits'

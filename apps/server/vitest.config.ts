@@ -1,3 +1,4 @@
+// MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow
 import { defineConfig } from 'vitest/config'
 
 export default defineConfig({

@@ -1,3 +1,4 @@
+// MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow
 import { addDays, toDateStr } from '@mediflow/shared'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { nextDocNo } from '../src/services/numbering'

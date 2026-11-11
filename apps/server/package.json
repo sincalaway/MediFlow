@@ -1,6 +1,7 @@
 {
   "name": "@mediflow/server",
   "version": "0.1.0",
+  "author": "sincalwow",
   "private": true,
   "type": "module",
   "main": "src/app.ts",

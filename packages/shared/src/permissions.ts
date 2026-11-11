@@ -1,3 +1,4 @@
+// MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow
 import type { Role } from './enums'
 
 /** 功能模块 -> 允许的角色（admin 拥有全部权限）。前端路由与后端 API 共用。 */

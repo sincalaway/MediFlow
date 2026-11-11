@@ -1,3 +1,4 @@
+// MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow
 import { addDays, patientPaymentSchema, visitSaveSchema } from '@mediflow/shared'
 import type { Prisma } from '@prisma/client'
 import type { FastifyPluginAsync } from 'fastify'
