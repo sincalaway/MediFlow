@@ -1,0 +1,50 @@
+appId: io.github.sincalaway.mediflow
+productName: MediFlow
+copyright: Copyright © 2026 MediFlow contributors
+directories:
+  app: .stage
+  output: release
+  buildResources: build
+# 不使用 asar：Prisma 查询引擎（原生 .node 文件）需要以普通文件形式加载
+asar: false
+npmRebuild: false
+nodeGypRebuild: false
+buildDependenciesFromSource: false
+files:
+  - '**/*'
+  - '!smoke.js'
+  - '!node_modules'
+# Prisma Client（含查询引擎）不走依赖收集，直接复制到 resources/app/node_modules
+extraResources:
+  - from: .stage/node_modules
+    to: app/node_modules
+    filter:
+      - '**/*'
+artifactName: '${productName}-${version}-${os}-${arch}.${ext}'
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+    - target: portable
+      arch: [x64]
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  shortcutName: MediFlow 诊所管理系统
+  artifactName: '${productName}-Setup-${version}.${ext}'
+portable:
+  artifactName: '${productName}-Portable-${version}.${ext}'
+mac:
+  category: public.app-category.medical
+  target:
+    - target: dmg
+  identity: null
+linux:
+  category: Office
+  target:
+    - target: AppImage
+  maintainer: MediFlow
+  synopsis: 诊所管理系统（离线版）
+publish: null

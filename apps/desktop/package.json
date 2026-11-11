@@ -1,0 +1,28 @@
+{
+  "name": "@mediflow/desktop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MediFlow 诊所管理系统 离线桌面版",
+  "author": "MediFlow contributors",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "start": "node scripts/build.mjs && electron .stage",
+    "dist": "node scripts/build.mjs && electron-builder --config electron-builder.yml",
+    "dist:dir": "node scripts/build.mjs && electron-builder --config electron-builder.yml --dir",
+    "typecheck": "tsc --noEmit",
+    "test": "echo \"(desktop) no unit tests\"",
+    "smoke": "node scripts/build.mjs --smoke && cross-env ELECTRON_RUN_AS_NODE=1 electron .stage/smoke.js"
+  },
+  "dependencies": {
+    "@mediflow/server": "workspace:*",
+    "@mediflow/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "electron": "^33.4.0",
+    "electron-builder": "^25.1.8",
+    "esbuild": "^0.25.0",
+    "cross-env": "^7.0.3"
+  },
+  "main": ".stage/main.js"
+}
