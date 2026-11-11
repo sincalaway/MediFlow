@@ -1,0 +1,319 @@
+// MediFlow 数据模型
+// 默认使用 SQLite；PostgreSQL 版本由 scripts/prisma-provider.mjs 生成 schema.postgresql.prisma
+// SCHEMA_VERSION = 1
+// 约定：金额 = 分(Int)；纯日期 = "YYYY-MM-DD" 字符串；时间戳 = DateTime
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Meta {
+  key   String @id
+  value String
+}
+
+/// 单据号计数器：key = 前缀+日期，事务内原子自增
+model DocCounter {
+  key   String @id
+  value Int
+
+  @@map("doc_counter")
+}
+
+model User {
+  id                 Int       @id @default(autoincrement())
+  username           String    @unique
+  passwordHash       String
+  displayName        String
+  role               String // admin | doctor | pharmacist | cashier
+  active             Boolean   @default(true)
+  mustChangePassword Boolean   @default(false)
+  staffId            Int?
+  staff              Staff?    @relation(fields: [staffId], references: [id])
+  lastLoginAt        DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+}
+
+model Staff {
+  id        Int      @id @default(autoincrement())
+  code      String   @unique
+  name      String
+  gender    String?
+  title     String? // 职业/职称
+  phone     String?
+  address   String?
+  remark    String?
+  isDoctor  Boolean  @default(false)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  users     User[]
+  visits    Visit[]
+}
+
+model Supplier {
+  id             Int              @id @default(autoincrement())
+  code           String           @unique
+  name           String
+  contact        String?
+  phone          String?
+  address        String?
+  remark         String?
+  active         Boolean          @default(true)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  purchaseOrders PurchaseOrder[]
+  returns        SupplierReturn[]
+  payments       Payment[]
+  batches        DrugBatch[]
+}
+
+model ChargeItem {
+  id         Int               @id @default(autoincrement())
+  code       String            @unique
+  name       String
+  price      Int
+  unit       String?
+  active     Boolean           @default(true)
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+  visitItems VisitChargeItem[]
+}
+
+model Drug {
+  id                Int                 @id @default(autoincrement())
+  code              String              @unique
+  name              String
+  pinyin            String              @default("")
+  category          String? // 西药/中药/中成药…
+  spec              String? // 规格型号
+  dosageForm        String? // 剂型
+  unit              String?
+  manufacturer      String?
+  stockMin          Int                 @default(0)
+  stockMax          Int                 @default(0)
+  retailPrice       Int                 @default(0)
+  remark            String?
+  active            Boolean             @default(true)
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  batches           DrugBatch[]
+  prescriptionItems PrescriptionItem[]
+  purchaseLines     PurchaseOrderLine[]
+
+  @@index([pinyin])
+}
+
+model DrugBatch {
+  id                Int                  @id @default(autoincrement())
+  drugId            Int
+  drug              Drug                 @relation(fields: [drugId], references: [id])
+  batchNo           String
+  mfgDate           String?
+  expiryDate        String
+  costPrice         Int                  @default(0)
+  /// 当前库存（StockMovement 台账的缓存，同一事务内维护）
+  stock             Int                  @default(0)
+  supplierId        Int?
+  supplier          Supplier?            @relation(fields: [supplierId], references: [id])
+  createdAt         DateTime             @default(now())
+  movements         StockMovement[]
+  prescriptionItems PrescriptionItem[]
+  purchaseLines     PurchaseOrderLine[]
+  returnLines       SupplierReturnLine[]
+
+  @@unique([drugId, batchNo, expiryDate])
+  @@index([drugId, expiryDate])
+}
+
+/// 库存台账：IN 入库(+) / RETURN 退货(-) / DISPENSE 发药(-) / ADJUST 盘点(±)
+model StockMovement {
+  id         Int       @id @default(autoincrement())
+  batchId    Int
+  batch      DrugBatch @relation(fields: [batchId], references: [id])
+  type       String
+  quantity   Int
+  unitPrice  Int       @default(0)
+  refType    String? // PO | RETURN | VISIT | ADJUST | IMPORT
+  refId      Int?
+  refNo      String?
+  occurredAt DateTime  @default(now())
+  userId     Int?
+  remark     String?
+
+  @@index([batchId])
+  @@index([type, occurredAt])
+  @@index([refType, refId])
+}
+
+model Patient {
+  id        Int       @id @default(autoincrement())
+  name      String
+  pinyin    String    @default("")
+  gender    String?
+  birthDate String?
+  phone     String?
+  idCard    String?
+  address   String?
+  allergies String?
+  history   String?
+  remark    String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  visits    Visit[]
+  payments  Payment[]
+
+  @@index([name, phone])
+  @@index([pinyin])
+}
+
+model Visit {
+  id             Int                @id @default(autoincrement())
+  visitNo        String             @unique
+  patientId      Int
+  patient        Patient            @relation(fields: [patientId], references: [id])
+  doctorId       Int?
+  doctor         Staff?             @relation(fields: [doctorId], references: [id])
+  visitDate      DateTime           @default(now())
+  chiefComplaint String?
+  history        String?
+  diagnosis      String?
+  remark         String?
+  status         String             @default("OPEN") // OPEN | DISPENSED | CANCELLED
+  dispensedAt    DateTime?
+  createdById    Int?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  items          PrescriptionItem[]
+  charges        VisitChargeItem[]
+  payments       Payment[]
+
+  @@index([visitDate])
+  @@index([patientId])
+}
+
+model PrescriptionItem {
+  id        Int        @id @default(autoincrement())
+  visitId   Int
+  visit     Visit      @relation(fields: [visitId], references: [id], onDelete: Cascade)
+  drugId    Int
+  drug      Drug       @relation(fields: [drugId], references: [id])
+  /// 发药后填入（FEFO 分配，可能拆分成多行）
+  batchId   Int?
+  batch     DrugBatch? @relation(fields: [batchId], references: [id])
+  quantity  Int
+  unitPrice Int
+  usage     String?
+  sort      Int        @default(0)
+}
+
+model VisitChargeItem {
+  id           Int        @id @default(autoincrement())
+  visitId      Int
+  visit        Visit      @relation(fields: [visitId], references: [id], onDelete: Cascade)
+  chargeItemId Int
+  chargeItem   ChargeItem @relation(fields: [chargeItemId], references: [id])
+  quantity     Int        @default(1)
+  unitPrice    Int
+}
+
+model PurchaseOrder {
+  id         Int                 @id @default(autoincrement())
+  orderNo    String              @unique
+  supplierId Int
+  supplier   Supplier            @relation(fields: [supplierId], references: [id])
+  orderDate  String
+  handler    String?
+  remark     String?
+  createdById Int?
+  createdAt  DateTime            @default(now())
+  lines      PurchaseOrderLine[]
+  payments   Payment[]
+
+  @@index([orderDate])
+}
+
+model PurchaseOrderLine {
+  id        Int           @id @default(autoincrement())
+  orderId   Int
+  order     PurchaseOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  drugId    Int
+  drug      Drug          @relation(fields: [drugId], references: [id])
+  batchId   Int
+  batch     DrugBatch     @relation(fields: [batchId], references: [id])
+  quantity  Int
+  costPrice Int
+}
+
+model SupplierReturn {
+  id         Int                  @id @default(autoincrement())
+  returnNo   String               @unique
+  supplierId Int
+  supplier   Supplier             @relation(fields: [supplierId], references: [id])
+  returnDate String
+  handler    String?
+  remark     String?
+  createdById Int?
+  createdAt  DateTime             @default(now())
+  lines      SupplierReturnLine[]
+
+  @@index([returnDate])
+}
+
+model SupplierReturnLine {
+  id        Int            @id @default(autoincrement())
+  returnId  Int
+  ret       SupplierReturn @relation(fields: [returnId], references: [id], onDelete: Cascade)
+  batchId   Int
+  batch     DrugBatch      @relation(fields: [batchId], references: [id])
+  quantity  Int
+  unitPrice Int
+}
+
+/// 收付款：PATIENT 就诊收费 / PATIENT_REPAY 患者还欠款 / SUPPLIER 付供应商货款
+model Payment {
+  id              Int            @id @default(autoincrement())
+  kind            String
+  docNo           String?        @unique
+  visitId         Int?
+  visit           Visit?         @relation(fields: [visitId], references: [id])
+  patientId       Int?
+  patient         Patient?       @relation(fields: [patientId], references: [id])
+  supplierId      Int?
+  supplier        Supplier?      @relation(fields: [supplierId], references: [id])
+  purchaseOrderId Int?
+  purchaseOrder   PurchaseOrder? @relation(fields: [purchaseOrderId], references: [id])
+  amount          Int
+  method          String         @default("现金")
+  paidAt          String
+  receivedBy      String?
+  remark          String?
+  createdAt       DateTime       @default(now())
+
+  @@index([kind, paidAt])
+  @@index([visitId])
+  @@index([supplierId])
+}
+
+model AuditLog {
+  id         Int      @id @default(autoincrement())
+  at         DateTime @default(now())
+  userId     Int?
+  username   String?
+  method     String
+  path       String
+  entity     String?
+  entityId   String?
+  statusCode Int
+  summary    String?
+  ip         String?
+
+  @@index([at])
+}
