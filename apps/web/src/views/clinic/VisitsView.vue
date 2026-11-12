@@ -8,7 +8,7 @@ import { api } from '../../api'
 import DateRange from '../../components/DateRange.vue'
 import { useAuth } from '../../stores/auth'
 import type { VisitListRow } from '../../types'
-import { fmtDateTime, money, run, today } from '../../utils'
+import { fmtDateTime, money, openPrint, run, today } from '../../utils'
 
 const auth = useAuth()
 const router = useRouter()
@@ -67,6 +67,28 @@ const columns: DataTableColumns<VisitListRow> = [
     title: '欠款',
     key: 'owed',
     render: (r) => h('span', { class: r.totals.owed > 0 ? 'text-red-600' : '' }, money(r.totals.owed)),
+  },
+  {
+    title: '打印',
+    key: 'print',
+    width: 100,
+    render: (r) =>
+      r.status === 'CANCELLED'
+        ? ''
+        : h('span', { class: 'space-x-3' }, [
+            r.totals.drugFee > 0
+              ? h(
+                  'a',
+                  { class: 'cursor-pointer text-teal-700', onClick: () => openPrint('prescription', r.id) },
+                  '处方',
+                )
+              : null,
+            h(
+              'a',
+              { class: 'cursor-pointer text-teal-700', onClick: () => openPrint('receipt', r.id) },
+              '收据',
+            ),
+          ]),
   },
 ]
 </script>

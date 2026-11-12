@@ -36,3 +36,18 @@ export const PAY_METHODS = ['现金', '微信', '支付宝', '银行卡', '医�
 
 export const DOC_PREFIXES = ['JZ', 'RK', 'TH', 'GF'] as const
 export type DocPrefix = (typeof DOC_PREFIXES)[number]
+
+/** 处方类别（《处方管理办法》附件1 处方标准·二、处方颜色） */
+export const RX_TYPES = ['普通', '急诊', '儿科', '麻、精一', '精二'] as const
+export type RxType = (typeof RX_TYPES)[number]
+export const RX_TYPE_STYLE: Record<RxType, { paper: string; mark: string | null; paperName: string }> = {
+  普通: { paper: '#ffffff', mark: null, paperName: '白色' },
+  急诊: { paper: '#fff8d6', mark: '急诊', paperName: '淡黄色' },
+  儿科: { paper: '#e6f5e3', mark: '儿科', paperName: '淡绿色' },
+  '麻、精一': { paper: '#fde4e4', mark: '麻、精一', paperName: '淡红色' },
+  精二: { paper: '#ffffff', mark: '精二', paperName: '白色' },
+}
+
+/** 费别 */
+export const FEE_TYPES = ['自费', '医保', '公费', '其他'] as const
+export type FeeType = (typeof FEE_TYPES)[number]

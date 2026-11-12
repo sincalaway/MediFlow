@@ -1,4 +1,10 @@
-import { computeVisitTotals, toDateStr, type VisitSaveInput, type VisitTotals } from '@mediflow/shared'
+import {
+  computeVisitTotals,
+  toDateStr,
+  type RxType,
+  type VisitSaveInput,
+  type VisitTotals,
+} from '@mediflow/shared'
 import type { Prisma } from '@prisma/client'
 import type { Tx } from '../db/client'
 import { badRequest, notFound } from '../errors'
@@ -28,7 +34,22 @@ export function withTotals<T extends VisitWithRows>(v: T): T & { totals: VisitTo
   return { ...v, totals: totalsOf(v) }
 }
 
-export async function saveVisit(tx: Tx, input: VisitSaveInput, userId: number | null, visitId?: number) {
+/** 处方前记字段（发药后仍允许修改，便于补打处方） */
+type SaveInput = Omit<VisitSaveInput, 'rxType'> & { rxType?: RxType }
+
+function header(input: SaveInput) {
+  const rxType = input.rxType ?? '普通'
+  return {
+    feeType: input.feeType ?? null,
+    department: input.department ?? null,
+    rxType,
+    weight: input.weight ?? null,
+    agentName: rxType === '麻、精一' ? (input.agentName ?? null) : null,
+    agentIdCard: rxType === '麻、精一' ? (input.agentIdCard ?? null) : null,
+  }
+}
+
+export async function saveVisit(tx: Tx, input: SaveInput, userId: number | null, visitId?: number) {
   const patient = await tx.patient.findUnique({ where: { id: input.patientId } })
   if (!patient) throw notFound('患者不存在')
   if (input.doctorId) {
@@ -50,6 +71,7 @@ export async function saveVisit(tx: Tx, input: VisitSaveInput, userId: number | 
     history: input.history,
     diagnosis: input.diagnosis,
     remark: input.remark,
+    ...header(input),
     ...(input.visitDate ? { visitDate: new Date(input.visitDate) } : {}),
   }
   let id: number
@@ -65,6 +87,7 @@ export async function saveVisit(tx: Tx, input: VisitSaveInput, userId: number | 
           history: base.history,
           diagnosis: base.diagnosis,
           remark: base.remark,
+          ...header(input),
         },
       })
       return visitId

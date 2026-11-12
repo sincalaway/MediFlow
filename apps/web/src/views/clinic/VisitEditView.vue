@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import {
   computeVisitTotals,
+  FEE_TYPES,
   PAYMENT_KIND_LABELS,
+  RX_TYPES,
+  type ClinicSettings,
+  type FeeType,
+  type RxType,
   VISIT_STATUS_LABELS,
   type PaymentKind,
   type VisitStatus,
@@ -16,7 +21,7 @@ import PatientForm, { type Patient } from '../../components/PatientForm.vue'
 import PayModal, { type PayTarget } from '../../components/PayModal.vue'
 import type { DrugLite } from '../../masterCache'
 import { useAuth } from '../../stores/auth'
-import { confirm, fmtDateTime, message, money, run, toCents, yuan } from '../../utils'
+import { confirm, fmtDateTime, message, money, openPrint, run, toCents, yuan } from '../../utils'
 
 const props = defineProps<{ id?: string }>()
 interface VisitDetail {
@@ -30,6 +35,12 @@ interface VisitDetail {
   history: string | null
   diagnosis: string | null
   remark: string | null
+  feeType: FeeType | null
+  department: string | null
+  rxType: RxType
+  weight: string | null
+  agentName: string | null
+  agentIdCard: string | null
   patient: Patient
   items: {
     id: number
@@ -89,6 +100,12 @@ const form = reactive({
   history: '',
   diagnosis: '',
   remark: '',
+  feeType: '自费' as FeeType | null,
+  department: '',
+  rxType: '普通' as RxType,
+  weight: '',
+  agentName: '',
+  agentIdCard: '',
   rx: [] as RxLine[],
   ch: [] as ChLine[],
 })
@@ -116,12 +133,13 @@ function onPatientCreated(p: Patient) {
 }
 
 async function load() {
-  const [staff, items, stockRows] = await Promise.all([
+  const [staff, items, stockRows, clinic] = await Promise.all([
     run(() => api.get<{ id: number; name: string; isDoctor: boolean; active: boolean }[]>('/staff')),
     run(() => api.get<typeof chargeItems.value>('/charge-items')),
     auth.can('pharmacy.read')
       ? run(() => api.get<{ id: number; valid: number }[]>('/stock/drugs'))
       : Promise.resolve([]),
+    run(() => api.get<ClinicSettings>('/settings/clinic')),
   ])
   doctors.value = (staff ?? [])
     .filter((s) => s.isDoctor && s.active)
@@ -133,6 +151,7 @@ async function load() {
     if (!v) return
     fill(v)
   } else {
+    form.department = clinic?.department ?? ''
     form.doctorId =
       auth.me?.staffId && doctors.value.some((d) => d.value === auth.me?.staffId) ? auth.me.staffId : null
     const pid = Number(route.query.patientId)
@@ -160,6 +179,12 @@ function fill(v: VisitDetail) {
     history: v.history ?? '',
     diagnosis: v.diagnosis ?? '',
     remark: v.remark ?? '',
+    feeType: v.feeType ?? '自费',
+    department: v.department ?? '',
+    rxType: v.rxType ?? '普通',
+    weight: v.weight ?? '',
+    agentName: v.agentName ?? '',
+    agentIdCard: v.agentIdCard ?? '',
     rx: v.items.map((i) => ({
       drugId: i.drugId,
       quantity: i.quantity,
@@ -187,6 +212,8 @@ function onCharge(l: ChLine, id: number | null) {
   const c = chargeItems.value.find((x) => x.id === id)
   if (c) l.unitPrice = yuan(c.price)
 }
+const feeOptions = FEE_TYPES.map((f) => ({ label: f, value: f }))
+const rxTypeOptions = RX_TYPES.map((f) => ({ label: f === '普通' ? '普通处方' : `${f}处方`, value: f }))
 const chargeOptions = computed(() =>
   chargeItems.value
     .filter((c) => c.active)
@@ -212,6 +239,12 @@ async function save(dispense: boolean) {
     history: form.history,
     diagnosis: form.diagnosis,
     remark: form.remark,
+    feeType: form.feeType,
+    department: form.department,
+    rxType: form.rxType,
+    weight: form.weight,
+    agentName: form.agentName,
+    agentIdCard: form.agentIdCard,
     prescription: form.rx
       .filter((l) => l.drugId)
       .map((l) => ({
@@ -324,6 +357,31 @@ async function afterPay() {
           /></n-form-item-gi>
           <n-form-item-gi label="备注"
             ><n-input v-model:value="form.remark" :disabled="!editableText"
+          /></n-form-item-gi>
+        </n-grid>
+        <n-grid :cols="4" :x-gap="12">
+          <n-form-item-gi label="费别"
+            ><n-select v-model:value="form.feeType" :options="feeOptions" :disabled="!editableText"
+          /></n-form-item-gi>
+          <n-form-item-gi label="科别"
+            ><n-input v-model:value="form.department" placeholder="如：全科" :disabled="!editableText"
+          /></n-form-item-gi>
+          <n-form-item-gi label="处方类别"
+            ><n-select v-model:value="form.rxType" :options="rxTypeOptions" :disabled="!editableText"
+          /></n-form-item-gi>
+          <n-form-item-gi label="体重"
+            ><n-input
+              v-model:value="form.weight"
+              placeholder="儿科必要时填写，如 12kg"
+              :disabled="!editableText"
+          /></n-form-item-gi>
+        </n-grid>
+        <n-grid v-if="form.rxType === '麻、精一'" :cols="2" :x-gap="12">
+          <n-form-item-gi label="代办人"
+            ><n-input v-model:value="form.agentName" placeholder="代办人姓名" :disabled="!editableText"
+          /></n-form-item-gi>
+          <n-form-item-gi label="代办人证件"
+            ><n-input v-model:value="form.agentIdCard" placeholder="身份证明编号" :disabled="!editableText"
           /></n-form-item-gi>
         </n-grid>
       </n-form>
@@ -464,6 +522,10 @@ async function afterPay() {
         <n-button v-if="visit?.status === 'OPEN' && auth.can('visit')" type="error" ghost @click="cancelVisit"
           >作废</n-button
         >
+        <template v-if="visit && visit.status !== 'CANCELLED'">
+          <n-button v-if="visit.items.length" @click="openPrint('prescription', visit.id)">打印处方</n-button>
+          <n-button @click="openPrint('receipt', visit.id)">打印收据</n-button>
+        </template>
         <n-button
           v-if="visit && visit.status !== 'CANCELLED' && visit.totals.owed > 0 && auth.can('charge')"
           type="warning"

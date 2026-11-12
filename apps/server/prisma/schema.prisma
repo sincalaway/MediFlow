@@ -1,6 +1,6 @@
 // MediFlow 数据模型
 // 默认使用 SQLite；PostgreSQL 版本由 scripts/prisma-provider.mjs 生成 schema.postgresql.prisma
-// SCHEMA_VERSION = 1
+// SCHEMA_VERSION = 2
 // 约定：金额 = 分(Int)；纯日期 = "YYYY-MM-DD" 字符串；时间戳 = DateTime
 
 generator client {
@@ -186,6 +186,13 @@ model Visit {
   history        String?
   diagnosis      String?
   remark         String?
+  /// v2：处方前记
+  feeType        String?
+  department     String?
+  rxType         String             @default("普通")
+  weight         String?
+  agentName      String?
+  agentIdCard    String?
   status         String             @default("OPEN") // OPEN | DISPENSED | CANCELLED
   dispensedAt    DateTime?
   createdById    Int?

@@ -44,6 +44,31 @@ function splitSql(sql: string): string[] {
     .filter(Boolean)
 }
 
+/**
+ * 增量迁移：key = 目标版本。只用 SQLite 与 PostgreSQL 都支持的 ALTER TABLE ADD COLUMN。
+ * 新增字段时：改 schema.prisma 的 SCHEMA_VERSION、在这里追加一步、pnpm db:sql。
+ */
+export const MIGRATIONS: Record<number, string[]> = {
+  2: [
+    `ALTER TABLE "Visit" ADD COLUMN "feeType" TEXT`,
+    `ALTER TABLE "Visit" ADD COLUMN "department" TEXT`,
+    `ALTER TABLE "Visit" ADD COLUMN "rxType" TEXT NOT NULL DEFAULT '普通'`,
+    `ALTER TABLE "Visit" ADD COLUMN "weight" TEXT`,
+    `ALTER TABLE "Visit" ADD COLUMN "agentName" TEXT`,
+    `ALTER TABLE "Visit" ADD COLUMN "agentIdCard" TEXT`,
+  ],
+}
+
+async function migrate(prisma: PrismaClient, from: number) {
+  for (let v = from + 1; v <= SCHEMA_VERSION; v++) {
+    const steps = MIGRATIONS[v] ?? []
+    await prisma.$transaction(async (tx) => {
+      for (const st of steps) await tx.$executeRawUnsafe(st)
+      await tx.meta.update({ where: { key: 'schema_version' }, data: { value: String(v) } })
+    })
+  }
+}
+
 /** 首次启动自动建表（无需 Prisma CLI），返回是否新建 */
 export async function ensureSchema(
   prisma: PrismaClient,
@@ -62,7 +87,10 @@ export async function ensureSchema(
     const rows = await prisma.$queryRawUnsafe<{ value: string }[]>(
       `SELECT "value" FROM "Meta" WHERE "key" = 'schema_version'`,
     )
-    if (rows.length) return false
+    if (rows.length) {
+      await migrate(prisma, Number(rows[0]!.value) || 1)
+      return false
+    }
   } catch {
     // 表不存在 -> 建库
   }

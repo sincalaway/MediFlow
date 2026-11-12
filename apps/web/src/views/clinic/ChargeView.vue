@@ -6,7 +6,7 @@ import { useRouter } from 'vue-router'
 import { api } from '../../api'
 import DateRange from '../../components/DateRange.vue'
 import PayModal, { type PayTarget } from '../../components/PayModal.vue'
-import { fmtDateTime, money, run, today } from '../../utils'
+import { fmtDateTime, money, openPrint, run, today } from '../../utils'
 import type { VisitListRow } from '../../types'
 
 const router = useRouter()
@@ -73,17 +73,20 @@ const columns: DataTableColumns<VisitListRow> = [
     title: '操作',
     key: 'op',
     render: (r) =>
-      r.totals.owed > 0
-        ? h(
-            'a',
-            {
-              class: 'cursor-pointer text-teal-700',
-              onClick: () =>
-                (target.value = { id: r.id, visitNo: r.visitNo, patientName: r.patient.name, ...r.totals }),
-            },
-            '收费',
-          )
-        : '已结清',
+      h('span', { class: 'space-x-3' }, [
+        r.totals.owed > 0
+          ? h(
+              'a',
+              {
+                class: 'cursor-pointer text-teal-700',
+                onClick: () =>
+                  (target.value = { id: r.id, visitNo: r.visitNo, patientName: r.patient.name, ...r.totals }),
+              },
+              '收费',
+            )
+          : h('span', { class: 'text-gray-400' }, '已结清'),
+        h('a', { class: 'cursor-pointer text-teal-700', onClick: () => openPrint('receipt', r.id) }, '收据'),
+      ]),
   },
 ]
 </script>

@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { PAY_METHODS, ROLES } from './enums'
+import { FEE_TYPES, PAY_METHODS, ROLES, RX_TYPES } from './enums'
 
 /** 约定：金额字段一律为「分」的整数；日期字段为 YYYY-MM-DD 字符串 */
 export const cents = z.number().int('金额必须为整数分').min(0, '金额不能为负')
@@ -130,6 +130,13 @@ export const visitSaveSchema = z.object({
   history: optStr,
   diagnosis: optStr,
   remark: optStr,
+  /** 处方前记：费别、科别、处方类别、体重；麻、精一处方另需代办人信息 */
+  feeType: z.enum(FEE_TYPES).optional().nullable(),
+  department: z.string().trim().max(32).optional().nullable(),
+  rxType: z.enum(RX_TYPES).default('普通'),
+  weight: z.string().trim().max(16).optional().nullable(),
+  agentName: z.string().trim().max(32).optional().nullable(),
+  agentIdCard: z.string().trim().max(32).optional().nullable(),
   prescription: z.array(prescriptionLineSchema).default([]),
   charges: z.array(visitChargeLineSchema).default([]),
   /** 保存后立即按 FEFO 发药 */
@@ -198,3 +205,13 @@ export const periodQuerySchema = z.object({
   from: dateStr,
   to: dateStr,
 })
+
+/** 机构信息（处方笺/收据抬头），存于 Meta 表 */
+export const clinicSettingsSchema = z.object({
+  name: z.string().trim().max(64).default(''),
+  address: z.string().trim().max(128).default(''),
+  phone: z.string().trim().max(32).default(''),
+  department: z.string().trim().max(32).default(''),
+  receiptNote: z.string().trim().max(200).default(''),
+})
+export type ClinicSettings = z.infer<typeof clinicSettingsSchema>

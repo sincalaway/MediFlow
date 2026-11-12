@@ -167,3 +167,25 @@ function multipart(fields: Record<string, string>, file: Buffer, filename: strin
     body: Buffer.concat(parts),
   }
 }
+
+describe('机构信息', () => {
+  it('管理员可改，其他登录用户可读', async () => {
+    const { token } = await login('admin', 'Secret123')
+    const auth = { authorization: `Bearer ${token}` }
+    const put = await app.inject({
+      method: 'PUT',
+      url: '/api/settings/clinic',
+      headers: auth,
+      payload: { name: '测试诊所', department: '全科' },
+    })
+    expect(put.statusCode).toBe(200)
+    expect(put.json()).toMatchObject({ name: '测试诊所', department: '全科', address: '' })
+    const c = await login('cashier1', 'cash1234')
+    const ch = { authorization: `Bearer ${c.token}` }
+    expect((await app.inject({ url: '/api/settings/clinic', headers: ch })).json().name).toBe('测试诊所')
+    expect(
+      (await app.inject({ method: 'PUT', url: '/api/settings/clinic', headers: ch, payload: {} })).statusCode,
+    ).toBe(403)
+    expect((await app.inject({ url: '/api/settings/clinic' })).statusCode).toBe(401)
+  })
+})

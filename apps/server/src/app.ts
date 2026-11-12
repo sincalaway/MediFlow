@@ -15,6 +15,7 @@ import { financeRoutes } from './routes/finance'
 import { masterRoutes } from './routes/master'
 import { patientRoutes } from './routes/patients'
 import { pharmacyRoutes } from './routes/pharmacy'
+import { settingsRoutes } from './routes/settings'
 import { systemRoutes } from './routes/system'
 import { userRoutes } from './routes/users'
 import { visitRoutes } from './routes/visits'
@@ -62,6 +63,7 @@ export async function buildApp(opts: ServerOptions): Promise<FastifyInstance> {
       await api.register(pharmacyRoutes)
       await api.register(financeRoutes)
       await api.register(systemRoutes)
+      await api.register(settingsRoutes)
     },
     { prefix: '/api' },
   )

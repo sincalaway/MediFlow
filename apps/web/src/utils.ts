@@ -50,3 +50,9 @@ export function confirm(content: string, title = '请确认'): Promise<boolean> 
     })
   })
 }
+
+/** 在新窗口打开打印页（Electron 中同源窗口允许打开），auto=1 时加载完自动弹出打印对话框 */
+export function openPrint(kind: 'prescription' | 'receipt', visitId: number) {
+  const url = `${location.pathname}#/print/${kind}/${visitId}?auto=1`
+  window.open(url, `mediflow-print-${kind}`, 'width=900,height=1000')
+}
