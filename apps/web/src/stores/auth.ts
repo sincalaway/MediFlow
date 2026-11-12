@@ -1,4 +1,3 @@
-// MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow
 import { can, type ModuleKey, type Role } from '@mediflow/shared'
 import { defineStore } from 'pinia'
 import { api, tokenStore } from '../api'

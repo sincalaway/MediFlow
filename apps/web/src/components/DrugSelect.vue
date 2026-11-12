@@ -1,4 +1,3 @@
-<!-- MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow -->
 <script setup lang="ts">
 import { matchKeyword } from '@mediflow/shared'
 import type { SelectOption } from 'naive-ui'

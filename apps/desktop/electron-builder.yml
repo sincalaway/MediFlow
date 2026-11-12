@@ -1,6 +1,6 @@
 appId: io.github.sincalaway.mediflow
 productName: MediFlow
-copyright: Copyright © 2026 sincalwow
+copyright: Copyright © 2026 MediFlow contributors
 directories:
   app: .stage
   output: release

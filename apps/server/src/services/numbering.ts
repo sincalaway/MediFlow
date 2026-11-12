@@ -1,4 +1,3 @@
-// MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow
 import { dateKey, formatDocNo, type DocPrefix } from '@mediflow/shared'
 import type { Tx } from '../db/client'
 

@@ -1,4 +1,3 @@
-// MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow
 import jwt from '@fastify/jwt'
 import multipart from '@fastify/multipart'
 import fastifyStatic from '@fastify/static'
@@ -52,7 +51,7 @@ export async function buildApp(opts: ServerOptions): Promise<FastifyInstance> {
   registerAuth(app)
   registerAudit(app)
 
-  app.get('/api/health', async () => ({ ok: true, version: VERSION, db: provider, author: 'sincalwow' }))
+  app.get('/api/health', async () => ({ ok: true, version: VERSION, db: provider }))
   await app.register(
     async (api) => {
       await api.register(authRoutes)

@@ -1,4 +1,3 @@
-// MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow
 import type { ModuleKey } from '@mediflow/shared'
 import { createRouter, createWebHashHistory, type RouteRecordRaw } from 'vue-router'
 import { useAuth } from './stores/auth'

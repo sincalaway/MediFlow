@@ -1,4 +1,3 @@
-// MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow
 import { InsufficientStockError } from '@mediflow/shared'
 import { Prisma } from '@prisma/client'
 import type { FastifyError, FastifyReply, FastifyRequest } from 'fastify'

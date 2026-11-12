@@ -1,4 +1,3 @@
-// MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow
 /**
  * 演示数据：pnpm db:seed
  * 账号：admin/admin123（首次登录强制改密）、doctor/doctor123、pharmacist/pharm123、cashier/cash123

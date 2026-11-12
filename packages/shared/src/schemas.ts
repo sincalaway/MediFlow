@@ -1,4 +1,3 @@
-// MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow
 import { z } from 'zod'
 import { PAY_METHODS, ROLES } from './enums'
 

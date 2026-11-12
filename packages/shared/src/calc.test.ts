@@ -1,4 +1,3 @@
-// MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow
 import { describe, expect, it } from 'vitest'
 import {
   allocateFefo,

@@ -1,4 +1,3 @@
-// MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow
 export const ROLES = ['admin', 'doctor', 'pharmacist', 'cashier'] as const
 export type Role = (typeof ROLES)[number]
 export const ROLE_LABELS: Record<Role, string> = {

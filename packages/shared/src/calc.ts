@@ -1,4 +1,3 @@
-// MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow
 /** 核心金额计算：所有汇总都由明细行计算，不允许手填 */
 export interface LineLike {
   quantity: number

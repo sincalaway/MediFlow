@@ -1,7 +1,6 @@
 {
   "name": "mediflow",
   "version": "0.1.0",
-  "author": "sincalwow",
   "private": true,
   "description": "MediFlow 诊所管理系统（Web + 离线桌面版）",
   "license": "MIT",

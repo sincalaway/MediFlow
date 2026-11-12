@@ -1,4 +1,3 @@
-// MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow
 import { PrismaClient, type Prisma } from '@prisma/client'
 import { POSTGRES_SQL, SCHEMA_VERSION, SQLITE_SQL } from './schemaSql'
 

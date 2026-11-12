@@ -1,4 +1,3 @@
-// MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow
 import type { DbProvider } from './client'
 
 /** 不区分大小写的 contains（SQLite 的 LIKE 默认对 ASCII 不区分大小写；PG 需要 mode） */

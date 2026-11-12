@@ -1,4 +1,3 @@
-// MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow
 import { computeVisitTotals, toDateStr, type VisitSaveInput, type VisitTotals } from '@mediflow/shared'
 import type { Prisma } from '@prisma/client'
 import type { Tx } from '../db/client'

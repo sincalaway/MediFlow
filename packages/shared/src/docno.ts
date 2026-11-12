@@ -1,4 +1,3 @@
-// MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow
 import type { DocPrefix } from './enums'
 
 export function dateKey(d: Date = new Date()): string {

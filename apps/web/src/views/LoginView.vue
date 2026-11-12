@@ -1,4 +1,3 @@
-<!-- MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow -->
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -79,7 +78,6 @@ async function submit() {
           needsSetup ? '设置并登录' : '登录'
         }}</n-button>
       </n-form>
-      <div class="mt-4 text-center text-xs text-gray-400">MediFlow © 2026 sincalwow</div>
     </n-card>
   </div>
 </template>

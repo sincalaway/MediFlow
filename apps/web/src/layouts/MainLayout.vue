@@ -1,4 +1,3 @@
-<!-- MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow -->
 <script setup lang="ts">
 import { ROLE_LABELS } from '@mediflow/shared'
 import type { MenuOption } from 'naive-ui'
@@ -71,7 +70,6 @@ function onUser(key: string) {
         </div>
       </div>
       <n-menu :options="menu" :value="active" :indent="18" />
-      <div class="px-5 py-3 text-xs text-gray-400">© 2026 sincalwow</div>
     </n-layout-sider>
     <n-layout>
       <n-layout-header bordered class="flex h-14 items-center justify-between px-6">

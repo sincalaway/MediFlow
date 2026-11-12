@@ -1,4 +1,3 @@
-// MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow
 // 收集生产运行所需的最小 node_modules（仅 Prisma Client + 查询引擎），用于 Docker 镜像
 // 用法：node scripts/runtime-deps.mjs <输出目录>
 import { cpSync, existsSync, mkdirSync } from 'node:fs'

@@ -1,4 +1,3 @@
-<!-- MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow -->
 <script setup lang="ts">
 import type { DataTableColumns } from 'naive-ui'
 import { NTag } from 'naive-ui'

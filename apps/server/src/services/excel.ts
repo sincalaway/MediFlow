@@ -1,4 +1,3 @@
-// MediFlow © 2026 sincalwow · MIT License · https://github.com/sincalaway/MediFlow
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { centsToYuan, toDateStr, yuanToCents } from '@mediflow/shared'
 import ExcelJS from 'exceljs'

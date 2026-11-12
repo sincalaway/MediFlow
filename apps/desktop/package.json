@@ -1,9 +1,9 @@
 {
   "name": "@mediflow/desktop",
   "version": "0.1.0",
-  "author": "sincalwow",
   "private": true,
   "description": "MediFlow 诊所管理系统 离线桌面版",
+  "author": "MediFlow contributors",
   "scripts": {
     "build": "node scripts/build.mjs",
     "start": "node scripts/build.mjs && electron .stage",
